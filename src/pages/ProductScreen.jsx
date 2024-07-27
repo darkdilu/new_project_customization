@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { IoMdArrowDropdown } from "react-icons/io";
+import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
 
 const materialType = [
   { id: 1, material: "cotton" },
@@ -34,11 +34,25 @@ const buttonType = [
   { id: 12, color: "bg-rose-600" },
 ];
 
+const colorType = [
+  { id: 1, color: "bg-white" },
+  { id: 2, color: "bg-black" },
+  { id: 3, color: "bg-red-700" },
+  { id: 4, color: "bg-orange-600" },
+  { id: 5, color: "bg-amber-400" },
+  { id: 6, color: "bg-yellow-900" },
+  { id: 7, color: "bg-lime-500" },
+  { id: 8, color: "bg-green-800" },
+  { id: 9, color: "bg-teal-300" },
+];
+
 export default function ProductScreen() {
   const [showMaterials, setShowMaterials] = useState(false);
   const [showButtonTypes, setShowButtonTypes] = useState(false);
   const [material, setMaterial] = useState("none");
   const [button, setButton] = useState("bg-black");
+  const [color, setColor] = useState("bg-white");
+  const [showcolor, setShowColor] = useState("");
 
   function handleButtonType() {
     if (showMaterials) {
@@ -94,13 +108,37 @@ export default function ProductScreen() {
         {showMaterials && (
           <div className="p-5 grid gap-3 grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
             {materialType.map((x) => (
-              <button
-                key={x.id}
-                onClick={() => setMaterial(x.material)}
-                className="bg-neutral-900 text-zinc-200 p-3 rounded-md hover:bg-neutral-600 hover:shadow-md hover:shadow-zinc-300 nav-link"
-              >
-                {x.material.toUpperCase()}
-              </button>
+              <div className="relative flex flex-col">
+                {showcolor === x.material && (
+                  <div className="absolute top-11 w-full p-5 grid gap-2 grid-cols-3 bg-zinc-700 rounded-b-xl z-10">
+                    {colorType.map((x) => (
+                      <div
+                        key={x.id}
+                        onClick={() => {
+                          setColor(x.color);
+                          setShowColor("");
+                        }}
+                        className={`${x.color} w-5 h-5 rounded-full m-3 cursor-pointer`}
+                      ></div>
+                    ))}
+                  </div>
+                )}
+                <button
+                  key={x.id}
+                  onClick={() => {
+                    setMaterial(x.material);
+                    setShowColor(x.material);
+                  }}
+                  className="w-full  bg-neutral-900 text-zinc-200 p-3 rounded-md hover:bg-neutral-600 hover:shadow-md hover:shadow-zinc-300 nav-link"
+                >
+                  <div className="flex justify-between item-center w-full">
+                    <span>{x.material.toUpperCase()}</span>
+                    <span className="md:text-xl">
+                      <IoMdArrowDropup />
+                    </span>
+                  </div>
+                </button>
+              </div>
             ))}
           </div>
         )}
@@ -116,7 +154,10 @@ export default function ProductScreen() {
           </div>
         )}
 
-        <h1 className="p-5 text-zinc-200">Material Selected: {material}</h1>
+        <h1 className="p-5 text-zinc-200 flex gap-2 items-center">
+          Material Selected: {material}{" "}
+          <div className={`w-5 h-5 rounded-full ${color}`}></div>
+        </h1>
         <h1 className="px-5 text-zinc-200 flex gap-2 items-center">
           Button : <div className={`w-5 h-5 rounded-full ${button}`}></div>
         </h1>
