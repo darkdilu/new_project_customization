@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { IoMdArrowDropdown } from "react-icons/io";
+import React, { useState } from "react";
+import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
 
 const materialType = [
   { id: 1, material: "cotton" },
@@ -34,52 +34,25 @@ const buttonType = [
   { id: 12, color: "bg-rose-600" },
 ];
 
-const initialMaterialImages = {
-  cotton: [],
-  polyster: ["path/to/polyster1.jpg", "path/to/polyster2.jpg"],
-  Denim: ["path/to/denim1.jpg", "path/to/denim2.jpg"],
-  corduroy: ["path/to/corduroy1.jpg", "path/to/corduroy2.jpg"],
-  "knitted fabric": ["path/to/knitted_fabric1.jpg", "path/to/knitted_fabric2.jpg"],
-  lycra: ["path/to/lycra1.jpg", "path/to/lycra2.jpg"],
-  hacob: ["path/to/hacob1.jpg", "path/to/hacob2.jpg"],
-  linen: ["path/to/linen1.jpg", "path/to/linen2.jpg"],
-  velvet: ["path/to/velvet1.jpg", "path/to/velvet2.jpg"],
-  rayon: ["path/to/rayon1.jpg", "path/to/rayon2.jpg"],
-  georgette: ["path/to/georgette1.jpg", "path/to/georgette2.jpg"],
-  crepe: ["path/to/crepe1.jpg", "path/to/crepe2.jpg"],
-  hacoba: ["path/to/hacoba1.jpg", "path/to/hacoba2.jpg"],
-  spandes: ["path/to/spandes1.jpg", "path/to/spandes2.jpg"],
-  satin: ["path/to/satin1.jpg", "path/to/satin2.jpg"],
-};
+const colorType = [
+  { id: 1, color: "bg-white" },
+  { id: 2, color: "bg-black" },
+  { id: 3, color: "bg-red-700" },
+  { id: 4, color: "bg-orange-600" },
+  { id: 5, color: "bg-amber-400" },
+  { id: 6, color: "bg-yellow-900" },
+  { id: 7, color: "bg-lime-500" },
+  { id: 8, color: "bg-green-800" },
+  { id: 9, color: "bg-teal-300" },
+];
 
 export default function ProductScreen() {
   const [showMaterials, setShowMaterials] = useState(false);
   const [showButtonTypes, setShowButtonTypes] = useState(false);
   const [material, setMaterial] = useState("none");
   const [button, setButton] = useState("bg-black");
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [currentImages, setCurrentImages] = useState([]);
-  const [modalStyle, setModalStyle] = useState({});
-  const [materialImages, setMaterialImages] = useState(initialMaterialImages);
-  const buttonRef = useRef(null);
-
-  useEffect(() => {
-    async function fetchMaterialImages() {
-      try {
-        const response = await fetch("http://localhost:3000/api/material/get/image/material2.jpg");
-        console.log(response)
-        const imageUrl = await response.url;
-        console.log(imageUrl)
-        setMaterialImages(prevState => ({
-          ...prevState,
-          cotton: [imageUrl, ...prevState.cotton],
-        }));
-      } catch (error) {
-        console.error("Error fetching material images:", error);
-      }
-    }
-    fetchMaterialImages();
-  }, []);
+  const [color, setColor] = useState("bg-white");
+  const [showcolor, setShowColor] = useState("");
 
   function handleButtonType() {
     if (showMaterials) {
@@ -152,13 +125,37 @@ export default function ProductScreen() {
         {showMaterials && (
           <div className="p-5 grid gap-3 grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
             {materialType.map((x) => (
-              <button
-                key={x.id}
-                onClick={(e) => handleMaterialClick(x.material, e)}
-                className="bg-neutral-900 text-zinc-200 p-3 rounded-md hover:bg-neutral-600 hover:shadow-md hover:shadow-zinc-300 nav-link"
-              >
-                {x.material.toUpperCase()}
-              </button>
+              <div className="relative flex flex-col">
+                {showcolor === x.material && (
+                  <div className="absolute top-11 w-full p-5 grid gap-2 grid-cols-3 bg-zinc-700 rounded-b-xl z-10">
+                    {colorType.map((x) => (
+                      <div
+                        key={x.id}
+                        onClick={() => {
+                          setColor(x.color);
+                          setShowColor("");
+                        }}
+                        className={`${x.color} w-5 h-5 rounded-full m-3 cursor-pointer`}
+                      ></div>
+                    ))}
+                  </div>
+                )}
+                <button
+                  key={x.id}
+                  onClick={() => {
+                    setMaterial(x.material);
+                    setShowColor(x.material);
+                  }}
+                  className="w-full  bg-neutral-900 text-zinc-200 p-3 rounded-md hover:bg-neutral-600 hover:shadow-md hover:shadow-zinc-300 nav-link"
+                >
+                  <div className="flex justify-between item-center w-full">
+                    <span>{x.material.toUpperCase()}</span>
+                    <span className="md:text-xl">
+                      <IoMdArrowDropup />
+                    </span>
+                  </div>
+                </button>
+              </div>
             ))}
           </div>
         )}
@@ -174,7 +171,10 @@ export default function ProductScreen() {
           </div>
         )}
 
-        <h1 className="p-5 text-zinc-200">Material Selected: {material}</h1>
+        <h1 className="p-5 text-zinc-200 flex gap-2 items-center">
+          Material Selected: {material}{" "}
+          <div className={`w-5 h-5 rounded-full ${color}`}></div>
+        </h1>
         <h1 className="px-5 text-zinc-200 flex gap-2 items-center">
           Button: <div className={`w-5 h-5 rounded-full ${button}`}></div>
         </h1>
